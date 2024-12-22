@@ -222,12 +222,11 @@ function confignewlevel() {
       // Configuración del nivel BONUS
       alienShipGrid = [[new AlienShip(
           'specialAlien',
-          createVector(width / 2, height / 4),
-          64,
-          64,
-          1,
+          createVector(width / 2, height / 4), // Posición inicial
+          64, 64, // Tamaño del alien especial
+          1, // Vidas
           [specialAlien1, specialAlien2], // Imágenes del alien especial
-          [specialAlien1] // Sin animación de muerte
+          [specialAlien1] // Imagen de muerte
       )]];
   } else {
       // Configuración estándar de niveles
