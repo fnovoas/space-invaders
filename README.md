@@ -23,6 +23,10 @@ Superar los 5 niveles llenos de enemigos. Al derribar las naves enemigas puede c
 
 ### Autores:
 Brayan Camilo Rodríguez Díaz
+
 Fernando Novoa Salazar
+
 Juan Felipe Fontecha Vasquez
+
 Juan David Vásquez Pinzón
+
