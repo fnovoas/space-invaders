@@ -1,9 +1,3 @@
-// Duraciones globales de los power-ups
-const DURATION_SHIELD = 9000; // Duración del escudo
-const DURATION_SPEED = 10000; // Duración del boost de velocidad
-const DURATION_FREEZE = 6800; // Duración del congelamiento
-const DURATION_DOUBLE_POINTS = 20000; // Duración de puntos dobles
-
 class Ship {
   constructor(pos, s_height, s_width, lifes, imagesAlive, imagesDead) {
     this.pos = pos.copy();
@@ -17,8 +11,12 @@ class Ship {
     this.maxImageStates = imagesAlive.length;
     this.movement = [false, false, false, false]; // 0->left, 1->up, 2->down, 3->right
     this.isShooting = false;
-    this.shieldActivation = 0;
-    this.shieldDuration = 5000;
+
+    // Duraciones centralizadas
+    this.shieldDuration = config.powerUpDurations.SHIELD || 5000;
+    this.speedBoostDuration = config.powerUpDurations.SPEED || 10000;
+    this.doublePointsDuration = config.powerUpDurations.DOUBLE_POINTS || 20000;
+    this.freezeDuration = config.powerUpDurations.FREEZE || 6800;
     this.maxVelocity = 9;
     this.maxAcceleration = 1;
     this.potAcc = 0.5;
@@ -33,7 +31,6 @@ class Ship {
     this.deadAnimStartTime = 0;
     this.deadAnimDuration = 500;
     this.speedBoostActive = false;
-    this.speedBoostDuration = 5000;
     this.speedBoostStartTime = 0;
     this.lastShieldSoundTime = 0; // Nueva variable para controlar la reproducción del sonido
     this.trail = []; // Array para guardar la estela de posiciones
@@ -110,10 +107,10 @@ class Ship {
     }
 
     activateCheatCode() {
-      this.lifes = 99
-      this.shootDelay = 100
-      soundpowerup.play()
-    }
+      this.lifes = 99;
+      this.shootDelay = 100;
+      audioManager.playSound('powerUp'); // Usar AudioManager
+    }    
   
     collision() {
       if (this.pos.x + this.vel.x < 0) {
@@ -147,7 +144,7 @@ class Ship {
     shoot() {
       if (paused) return; // Evitar disparos mientras está pausado
       if (!this.isShooting || millis() - this.lastShotTime < this.shootDelay) return;
-      soundshoot.play();
+      audioManager.playSound('shoot'); // Usar AudioManager para reproducir sonido
       let bulletVel = createVector(0, -8);
       let bulletPos = this.pos.copy().add(this.s_width / 2, 0);
       this.lastShotTime = millis();
@@ -166,17 +163,15 @@ class Ship {
         ) {
           enemyBullets.splice(i, 1);
           if (this.hasShield) {
-            // Verificar si el sonido ya fue reproducido recientemente
             if (millis() - this.lastShieldSoundTime > 500) {
-              soundbrokenshield.setVolume(1); // Ajustar el volumen
-              soundbrokenshield.play();
-              this.lastShieldSoundTime = millis(); // Registrar el tiempo del sonido
+              audioManager.playSound('brokenShield'); // Usar AudioManager
+              this.lastShieldSoundTime = millis();
             }
             this.hasShield = false;
             return false;
           } else {
             this.loseOneLife();
-            if (this.lifes < 1) {return true};
+            if (this.lifes < 1) return true;
             return false;
           }
         }
@@ -189,86 +184,76 @@ class Ship {
         let power = powerUps[i];
         if ((power.pos.x + power.s_width >= this.pos.x && power.pos.x <= this.pos.x + this.s_width) &&
           (power.pos.y + power.s_height >= this.pos.y && power.pos.y <= this.pos.y + this.s_height)) {
-          soundpowerup.play();
+          audioManager.playSound('powerUp'); // Usar AudioManager
           this.usePower(power);
         }
       }
-    }
+    }    
   
     usePower(power) {
       console.log("Power-up capturado:", power.type);
       switch (power.type) {
-          case PowerUpType.SPEED:
-              if (!this.speedBoostActive) {
-                  console.log("Activando SPEED");
-                  this.speedBoostActive = true;
-                  this.speedBoostStartTime = millis();
-                  this.originalMaxVelocity = this.maxVelocity; // Almacenar la velocidad original
-                  this.maxVelocity += 3; // Incrementar la velocidad máxima del jugador
-              }
-              break;
+        case PowerUpType.SPEED:
+          if (!this.speedBoostActive) {
+            this.speedBoostActive = true;
+            this.speedBoostStartTime = millis();
+            this.originalMaxVelocity = this.maxVelocity; // Almacenar la velocidad original
+            this.maxVelocity += 3; // Incrementar la velocidad máxima del jugador
+          }
+          break;
   
-          case PowerUpType.CADENCY:
-              if (this.shootDelay > this.minShootDelay) {
-                  this.shootDelay -= 100;
-                  console.log("Nueva cadencia:", this.shootDelay);
-              }
-              break;
+        case PowerUpType.CADENCY:
+          if (this.shootDelay > this.minShootDelay) {
+            this.shootDelay -= 100;
+            console.log("Nueva cadencia:", this.shootDelay);
+          }
+          break;
   
-          case PowerUpType.DOUBLE_POINTS:
-              console.log("Activando DOUBLE_POINTS");
-              doublePoints = true;
-              doublePointsActivation = millis();
-              doublePointsDuration = DURATION_DOUBLE_POINTS;
-              break;
+        case PowerUpType.DOUBLE_POINTS:
+          doublePoints = true;
+          doublePointsActivation = millis();
+          break;          
   
-          case PowerUpType.FREEZE:
-              console.log("Activando FREEZE");
-              alienGroup.freezeActivation = millis();
-              alienGroup.freezeDuration = DURATION_FREEZE; // Asignar duración centralizada
-              alienGroup.freezealienshipgroup();
-              break;
+        case PowerUpType.FREEZE:
+          alienGroup.freezeActivation = millis();
+          alienGroup.freezeDuration = config.powerUpDurations.FREEZE || 6800;
+          alienGroup.freezealienshipgroup();          
+          break;
   
-          case PowerUpType.NOENEMYBULLETS:
-              console.log("Eliminando balas enemigas");
-              enemyBullets = [];
-              break;
+        case PowerUpType.NOENEMYBULLETS:
+          enemyBullets = [];
+          break;
   
-          case PowerUpType.EXTRA_LIFE:
-              console.log("Ganando vida extra");
-              this.lifes++;
-              break;
+        case PowerUpType.EXTRA_LIFE:
+          this.lifes++;
+          break;
   
-          case PowerUpType.SHIELD:
-              console.log("Activando SHIELD");
-              this.hasShield = true;
-              this.shieldActivation = millis();
-              this.shieldDuration = DURATION_SHIELD; // Asignar duración centralizada
-              break;
+        case PowerUpType.SHIELD:
+          this.hasShield = true;
+          this.shieldActivation = millis();
+          this.shieldDuration = config.powerUpDurations.SHIELD || 5000;
+          break;
   
-          default:
-              console.warn("Tipo de power-up desconocido:", power.type);
-              break;
+        default:
+          console.warn("Tipo de power-up desconocido:", power.type);
+          break;
       }
   
-      // Eliminar el power-up de la lista global
       let index = powerUps.indexOf(power);
       if (index !== -1) {
-          powerUps.splice(index, 1);
-          console.log("Power-up eliminado de la lista global.");
+        powerUps.splice(index, 1);
       }
-  }     
+    }    
   
     startDeathAnimation() {
       this.isDead = true;
       this.deadAnimStartTime = millis();
-    }
+      audioManager.playSound('explosion');
+    }    
   
     isDeathAnimationFinished() {
-      soundshipdeath.setVolume(0.1);
-      soundshipdeath.play();
       return millis() - this.deadAnimStartTime > this.deadAnimDuration * this.imagesDead.length;
-    }
+    }    
   
     loseOneLife() {
       enemyBullets = [];
@@ -320,7 +305,7 @@ class Ship {
       }
     
       // Desactivar puntos dobles
-      if (doublePoints && millis() - doublePointsActivation > doublePointsDuration) {
+      if (doublePoints && millis() - doublePointsActivation > this.doublePointsDuration) {
         doublePoints = false;
       }
     

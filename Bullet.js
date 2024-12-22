@@ -1,12 +1,11 @@
 class Bullet {
   constructor(pos, vel, b_width, b_height, col) {
     this.pos = pos.copy();
-    this.vel = vel.copy().limit(this.maxVelocity);
+    this.vel = vel.copy().limit(config.bulletSettings.maxVelocity || 12); // Centralizado
     this.b_width = b_width;
     this.b_height = b_height;
-    this.col = col;
-    this.maxVelocity = 12;
-    this.isActive = true; // Nueva propiedad para manejar estado activo
+    this.col = col || color(255); // Predeterminado o centralizado
+    this.isActive = true;
   }
 
   render() {
@@ -19,7 +18,7 @@ class Bullet {
   update() {
     this.pos.add(this.vel);
     if (this.isOutOfBounds()) {
-      this.isActive = false; // Desactiva la bala si está fuera de pantalla
+      this.isActive = false;
     }
   }
 

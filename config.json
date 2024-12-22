@@ -1,0 +1,29 @@
+{
+    "levels": [
+      { "enemies": 4, "rows": 3 },
+      { "enemies": 5, "rows": 4 },
+      { "enemies": 6, "rows": 5 },
+      { "enemies": 7, "rows": 6 },
+      { "enemies": 8, "rows": 7 }
+    ],
+    "powerUpDurations": {
+      "SHIELD": 9000,
+      "SPEED": 10000,
+      "FREEZE": 6800,
+      "DOUBLE_POINTS": 20000
+    },
+    "scores": {
+      "alienA": 10,
+      "alienB": 20,
+      "alienC": 30
+    },
+    "audioPaths": {
+      "shoot": "./sounds/shoot.wav",
+      "explosion": "./sounds/explosion.wav",
+      "invaderKilled": "./sounds/invaderkilled.wav",
+      "powerUp": "./sounds/powerup.wav",
+      "gameOver": "./sounds/GameOver.wav",
+      "brokenShield": "./sounds/brokenshield.wav"
+    }
+  }
+  
