@@ -23,7 +23,7 @@ class AlienShip {
       this.newPowerUp = null;
 
       // Puntajes centralizados por tipo
-      this.scoreValue = config.alienScores[type] || 0;
+      this.scoreValue = config.scores[type] || 0;
   }
 
   isDeath() {
