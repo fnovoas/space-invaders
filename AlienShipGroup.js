@@ -50,9 +50,7 @@ class AlienShipGroup {
       }
     
       if (!aliensAlive) {
-        if (level === 'bonus') {
-            level = 5; // Transición al nivel 5 desde el BONUS
-        } else if (level >= enemyLevels.size) {
+        if (level >= enemyLevels.size) { // Corregido: usa >= para incluir el último nivel
             winner = true; // Activar pantalla de victoria
             if (highScore < actualScore) {
                 highScore = actualScore; // Actualizar high-score si es necesario

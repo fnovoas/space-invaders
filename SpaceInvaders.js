@@ -218,8 +218,8 @@ function confignewlevel() {
   powerUps = [];
   let levelConfig = enemyLevels.get(level);
 
-  if (level === 'bonus') {
-      // Configuración del nivel BONUS
+  if (level === 5) {
+      // Configuración del nivel BONUS, Bonus es el nivel 5
       alienShipGrid = [[new AlienShip(
           'specialAlien',
           createVector(width / 2, height / 4), // Posición inicial
@@ -266,8 +266,8 @@ function setupEnemiesForLevel() {
   enemyLevels.set(2, [5, 4]);
   enemyLevels.set(3, [6, 5]);
   enemyLevels.set(4, [7, 6]);
-  enemyLevels.set('bonus', [1, 1]); // Nivel BONUS con un solo alien
-  enemyLevels.set(5, [8, 7]); // Nivel final
+  enemyLevels.set(5, [1, 1]); // Nivel BONUS con un solo alien
+  enemyLevels.set(6, [8, 7]); // Nivel final
 }
 
 function renderPowerUps() {
@@ -318,7 +318,7 @@ function showlevel() {
   fill(255);
   textAlign(CENTER, CENTER);
   textSize(32);
-  text(level === 'bonus' ? "BONUS LEVEL" : "LEVEL " + level, width / 2, height / 2 - 50);
+  text(level === 5 ? "BONUS LEVEL" : "LEVEL " + level, width / 2, height / 2 - 50);
 }
 
 function gameOverFunc() {

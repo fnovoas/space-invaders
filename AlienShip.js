@@ -21,7 +21,10 @@ class AlienShip {
       this.prevMillis = 0;
       this.imageState = 0;
       this.newPowerUp = null;
-      this.scoreValue = type === 'specialAlien' ? 100 : 10;
+      this.scoreValue = 0;
+
+      // Special Alien WUUUU Stuff
+      this.specialLife = 50;
   
       switch (type) {
         case 'alienA':
@@ -33,6 +36,10 @@ class AlienShip {
         case 'alienC':
           this.scoreValue = 20;
           break;
+        case 'specialAlien':
+          this.scoreValue = 100;
+          this.shotDelay = 200;
+          this.isSpecial = true;
         default:
           this.scoreValue = 0;
           break;
@@ -46,6 +53,14 @@ class AlienShip {
           if ((bullet.pos.x + bullet.b_width >= this.pos.x && bullet.pos.x <= this.pos.x + this.s_width) &&
             bullet.pos.y <= this.pos.y + this.s_height && bullet.pos.y + bullet.b_height >= this.pos.y) {
             myBullets.splice(i, 1);
+            
+            if (this.type === 'specialAlien') {
+                this.specialLife -= 1;
+                if (this.specialLife > 0) {
+                    return false;
+                }
+            }
+            
             this.startDeathAnimation();
             this.newPowerUp = this.spawnPowerUp();
             if (this.newPowerUp != null) {
