@@ -9,6 +9,8 @@ Desplazarse: flechas ←, →.
 
 Disparar: tecla SPACE.
 
+Pausar/reanudar: Q.
+
 ### Objetivo:
 Superar los 5 niveles llenos de enemigos. Al derribar las naves enemigas puede conseguir mejoras temporales que le ayudarán a enfrentar las hordas.
 

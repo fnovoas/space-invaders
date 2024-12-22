@@ -6,7 +6,9 @@ let Type;
 let myBullets = [];
 let enemyBullets = [];
 let powerUps = [];
-
+let paused = false;
+let pauseDuration = 0;
+let lastPauseTime = 0; // Tiempo en que se activó la pausa
 let imagesShipAlive, imagesShipDead, imagesAlienAAlive, imagesAlienADead, imagesAlienBAlive, imagesAlienBDead, imagesAlienCAlive, imagesAlienCDead;
 let fondo;
 let shield, cadency, doublepoints, freeze, speed, nobullets, extralife;
@@ -66,11 +68,19 @@ function setup() {
   gameStarted = false, gameOver = false, gameConfigurated = true, winner = false;
   s = new p5.SoundFile();
   s.setVolume(volume);
+  noSmooth(); // Desactiva el anti-aliasing para preservar el pixel art
   setupEnemiesForLevel();
   configNewGame();
 }
 
 function draw() {
+  if (paused) {
+    fill(255);
+    textAlign(CENTER, CENTER);
+    textSize(32);
+    text("PAUSE", width / 2, height / 2);
+    return; // Detiene el resto del código en `draw`
+  }
   if (!gameStarted && !gameOver && !winner) {
     startScreen();
 } else if (gameOver) {
@@ -114,6 +124,44 @@ function draw() {
 }
 
 function keyPressed() {
+  if (paused) {
+    // Solo permitir la tecla Q para reanudar el juego
+    if (key === 'Q' || key === 'q') {
+      paused = false;
+      let pauseTime = millis() - lastPauseTime;
+      pauseDuration += pauseTime;
+
+      // Ajustar todos los tiempos dependientes de `millis()`
+      ship.lastShotTime += pauseTime;
+      doublePointsActivation += pauseTime;
+      ship.shieldActivation += pauseTime;
+      ship.speedBoostStartTime += pauseTime;
+      alienGroup.freezeActivation += pauseTime;
+    }
+    return; // Ignorar cualquier otra tecla
+  }
+
+  // Resto de la lógica si el juego no está pausado
+  if (key === 'Q' || key === 'q') {
+    if (!paused) {
+      // Iniciar pausa
+      lastPauseTime = millis();
+    } else {
+      // Terminar pausa
+      let pauseTime = millis() - lastPauseTime;
+      pauseDuration += pauseTime;
+
+      // Ajustar todos los tiempos dependientes de `millis()`
+      ship.lastShotTime += pauseTime;
+      doublePointsActivation += pauseTime;
+      ship.shieldActivation += pauseTime;
+      ship.speedBoostStartTime += pauseTime;
+      alienGroup.freezeActivation += pauseTime;
+    }
+    ship.releaseAllKeys(); // Simular liberación de todas las teclas
+    paused = !paused;
+    return;
+  }
   if (winner) {
     winner = false;
   } else if (!gameStarted || gameOver) {
@@ -125,7 +173,10 @@ function keyPressed() {
 }
 
 function keyReleased() {
-  if (gameStarted && !gameOver) {
+  if (paused) {
+    return; // Ignorar todas las teclas mientras está pausado
+  }
+  if (!paused && gameStarted && !gameOver) {
     ship.keyFunctions(keyCode, false);
   }
 }

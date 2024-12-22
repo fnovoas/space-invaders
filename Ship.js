@@ -145,8 +145,8 @@ class Ship {
     }
   
     shoot() {
+      if (paused) return; // Evitar disparos mientras está pausado
       if (!this.isShooting || millis() - this.lastShotTime < this.shootDelay) return;
-      s.setVolume(0.1);
       soundshoot.play();
       let bulletVel = createVector(0, -8);
       let bulletPos = this.pos.copy().add(this.s_width / 2, 0);
@@ -277,7 +277,13 @@ class Ship {
       this.lifes--;
       this.startDeathAnimation();
     }
-  
+    releaseAllKeys() { // Resetea el estado de todas las teclas relacionadas con la nave
+      // Restablecer todas las teclas de movimiento
+      this.movement = [false, false, false, false];
+      this.isShooting = false;
+      this.acc.set(0, 0); // Detener aceleración
+      this.vel.set(0, 0); // Detener velocidad
+    }    
     respawn() {
       this.pos.x = width / 2 - this.s_width / 2;
       this.isDead = false;
