@@ -73,6 +73,7 @@ function preloadAllImages() {
 }
 
 function setup() {
+  console.log("Iniciando setup...");
   if (!configLoaded) {
     console.error("Error: Configuraciones no cargadas. Verifica el archivo config.json.");
     createCanvas(1080, 720);
@@ -96,7 +97,9 @@ function setup() {
 }
 
 function draw() {
+  console.log("Iniciando draw...");
   if (paused) {
+    console.log("Juego en pausa");
     fill(255);
     textAlign(CENTER, CENTER);
     textSize(32);

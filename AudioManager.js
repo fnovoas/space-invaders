@@ -2,8 +2,12 @@ class AudioManager {
     constructor(audioConfig) {
       this.sounds = {};
       for (const [key, path] of Object.entries(audioConfig)) {
-        this.sounds[key] = loadSound(path);
-      }
+        console.log(`Cargando sonido: ${path}`); // Depuración
+        this.sounds[key] = loadSound(path, 
+          () => console.log(`Sonido cargado: ${key}`), 
+          () => console.warn(`Error al cargar sonido: ${key}`)
+        );
+      }      
     }
   
     playSound(key) {

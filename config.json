@@ -1,4 +1,12 @@
 {
+    "alienSettings": {
+      "deadAnimDuration": 1000, 
+      "shotDelayRange": [1500, 3000], 
+      "timeToMove": 1, 
+      "imageDelay": 1000, 
+      "moveSpeed": 1, 
+      "maxSpeed": 10
+    },
     "levels": [
       { "enemies": 4, "rows": 3 },
       { "enemies": 5, "rows": 4 },
