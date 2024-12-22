@@ -2,7 +2,7 @@ class AlienShip {
     constructor(type, pos, s_width, s_height, lifes, imagesAlive, imagesDead) {
       this.type = type;
       this.pos = pos.copy();
-      this.vel = createVector(1, 0);
+      this.vel = createVector(type === 'specialAlien' ? random([-1, 1]) : 1, 0);
       this.lifes = lifes;
       this.s_width = s_width;
       this.s_height = s_height;
@@ -21,6 +21,7 @@ class AlienShip {
       this.prevMillis = 0;
       this.imageState = 0;
       this.newPowerUp = null;
+      this.scoreValue = type === 'specialAlien' ? 100 : 10;
   
       switch (type) {
         case 'alienA':
@@ -76,10 +77,13 @@ class AlienShip {
   
     move() {
       if (millis() - this.lastMoveTime > this.timeToMove) {
-        this.pos.add(this.vel);
-        this.lastMoveTime = millis();
+          this.pos.add(this.vel);
+          if (this.type === 'specialAlien' && (this.pos.x < 0 || this.pos.x + this.s_width > width)) {
+              this.vel.x *= -1; // Rebote en los bordes para el alien especial
+          }
+          this.lastMoveTime = millis();
       }
-    }
+  }
   
     shoot() {
       if (millis() - this.lastShotTime < this.shotDelay) return;

@@ -1,4 +1,4 @@
-//Space Invaders (prototipo) - Tarea 1 - Computación visual 2024-2
+//Space Invaders - Tarea 1 - Computación visual 2024-2
 let s;
 let ship; // La nave del jugador
 let alienGroup; // 
@@ -52,6 +52,8 @@ function preloadAllImages() {
   speed = loadImage(spritesRootPath + "speed.png");
   nobullets = loadImage(spritesRootPath + "nobullets.png");
   extralife = loadImage(spritesRootPath + "extralife.png");
+  specialAlien1 = loadImage(spritesRootPath + "specialAlien_1.png");
+  specialAlien2 = loadImage(spritesRootPath + "specialAlien_2.png");
 }
 
 
@@ -215,44 +217,58 @@ function confignewlevel() {
   enemyBullets = [];
   powerUps = [];
   let levelConfig = enemyLevels.get(level);
-  enemies = levelConfig[0];
-  enemyRows = levelConfig[1];
 
-  alienShipGrid = Array.from({ length: enemyRows }, () => Array(enemies).fill(null));
-  // Configurar enemigos para el nuevo nivel
-  for (let j = 0; j < enemyRows; j++) {
-    let imagesAlive;
-    let imagesDead;
-    if (j < 2) {
-      imagesAlive = imagesAlienBAlive;
-      imagesDead = imagesAlienBDead;
-    } else if (j < 4) {
-      imagesAlive = imagesAlienCAlive;
-      imagesDead = imagesAlienCDead;
-    } else {
-      imagesAlive = imagesAlienAAlive;
-      imagesDead = imagesAlienADead;
-    }
-    for (let i = 0; i < enemies; i++) {
-      if (imagesAlive === imagesAlienAAlive) {
-        Type = Object.values(alienType)[0];
-      } else if (imagesAlive === imagesAlienBAlive) {
-        Type = Object.values(alienType)[1];
-      } else {
-        Type = Object.values(alienType)[2];
+  if (level === 'bonus') {
+      // Configuración del nivel BONUS
+      alienShipGrid = [[new AlienShip(
+          'specialAlien',
+          createVector(width / 2, height / 4),
+          64,
+          64,
+          1,
+          [specialAlien1, specialAlien2], // Imágenes del alien especial
+          [specialAlien1] // Sin animación de muerte
+      )]];
+  } else {
+      // Configuración estándar de niveles
+      enemies = levelConfig[0];
+      enemyRows = levelConfig[1];
+      alienShipGrid = Array.from({ length: enemyRows }, () => Array(enemies).fill(null));
+      for (let j = 0; j < enemyRows; j++) {
+          let imagesAlive, imagesDead;
+          if (j < 2) {
+              imagesAlive = imagesAlienBAlive;
+              imagesDead = imagesAlienBDead;
+          } else if (j < 4) {
+              imagesAlive = imagesAlienCAlive;
+              imagesDead = imagesAlienCDead;
+          } else {
+              imagesAlive = imagesAlienAAlive;
+              imagesDead = imagesAlienADead;
+          }
+          for (let i = 0; i < enemies; i++) {
+              alienShipGrid[j][i] = new AlienShip(
+                  imagesAlive === imagesAlienAAlive ? 'alienA' : (imagesAlive === imagesAlienBAlive ? 'alienB' : 'alienC'),
+                  createVector(100 + i * 80, 100 + j * 50),
+                  32,
+                  32,
+                  3,
+                  imagesAlive,
+                  imagesDead
+              );
+          }
       }
-      alienShipGrid[j][i] = new AlienShip(Type, createVector(100 + i * 80, 100 + j * 50), 32, 32, 3, imagesAlive, imagesDead);
-    }
   }
   alienGroup = new AlienShipGroup(alienShipGrid);
 }
 
 function setupEnemiesForLevel() {
-    enemyLevels.set(1, [4, 3]);
-    enemyLevels.set(2, [5, 4]);
-    enemyLevels.set(3, [6, 5]);
-    enemyLevels.set(4, [7, 6]);
-    enemyLevels.set(5, [8, 7]); // Nivel final
+  enemyLevels.set(1, [4, 3]);
+  enemyLevels.set(2, [5, 4]);
+  enemyLevels.set(3, [6, 5]);
+  enemyLevels.set(4, [7, 6]);
+  enemyLevels.set('bonus', [1, 1]); // Nivel BONUS con un solo alien
+  enemyLevels.set(5, [8, 7]); // Nivel final
 }
 
 function renderPowerUps() {
@@ -303,7 +319,7 @@ function showlevel() {
   fill(255);
   textAlign(CENTER, CENTER);
   textSize(32);
-  text("LEVEL " + level, width / 2, height / 2 - 50);
+  text(level === 'bonus' ? "BONUS LEVEL" : "LEVEL " + level, width / 2, height / 2 - 50);
 }
 
 function gameOverFunc() {
