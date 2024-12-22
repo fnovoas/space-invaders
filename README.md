@@ -6,6 +6,7 @@ Diríjase a [https://fnovoas.github.io/space-invaders/](https://fnovoas.github.i
 
 ### Controles:
 Desplazarse: flechas ←, →.
+
 Disparar: tecla SPACE.
 
 ### Objetivo:
