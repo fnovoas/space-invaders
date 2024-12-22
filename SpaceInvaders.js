@@ -33,36 +33,16 @@ function preload() {
   loadJSON('./config.json', 
     (data) => {
       config = data;
+      console.log("Config cargado:", config); // Agrega esta línea
       levelManager = new LevelManager(config);
       audioManager = new AudioManager(config.audioPaths);
       configLoaded = true;
     },
     () => {
       console.warn("Error al cargar config.json. Usando valores predeterminados.");
-      config = {
-        powerUpDurations: { DOUBLE_POINTS: 5000, SHIELD: 9000, SPEED: 10000 },
-        audioPaths: {
-          shoot: "./sounds/shoot.wav",
-          explosion: "./sounds/explosion.wav",
-          invaderKilled: "./sounds/invaderkilled.wav",
-          powerUp: "./sounds/powerup.wav",
-          gameOver: "./sounds/GameOver.wav",
-          brokenShield: "./sounds/brokenshield.wav"
-        },
-        ship: { initialLives: 3 },
-        levels: [
-          { enemies: 4, rows: 3 },
-          { enemies: 5, rows: 4 },
-          { enemies: 6, rows: 5 },
-          { enemies: 7, rows: 6 },
-          { enemies: 8, rows: 7 }
-        ]
-      };
-      levelManager = new LevelManager(config);
-      audioManager = new AudioManager(config.audioPaths);
       configLoaded = true;
     }
-  );
+  );  
   preloadAllImages();
 }
 
@@ -364,6 +344,7 @@ function loadImages(spriteName, n_images) {
   let images = [];
   for (let i = 0; i < n_images; i++) {
     let imagePath = `${spritesRootPath}${spriteName}_${i + 1}.png`;
+    console.log("Cargando imagen:", imagePath); // Depuración
     loadImage(
       imagePath,
       (img) => images.push(img),
@@ -374,7 +355,7 @@ function loadImages(spriteName, n_images) {
         placeholder.fill(255);
         placeholder.textAlign(CENTER, CENTER);
         placeholder.text("X", 16, 16);
-        images.push(placeholder); // Agregar marcador funcional
+        images.push(placeholder);
       });
   }
   return images;
